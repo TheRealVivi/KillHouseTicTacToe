@@ -4,6 +4,10 @@
 #include "TicTacToeBoard.h"
 #include "Components/BoxComponent.h"
 #include "Components/SceneComponent.h"
+#include "Engine/World.h"
+#include "MainPlayer.h"
+#include "TicTacToeBoardPiece.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ATicTacToeBoard::ATicTacToeBoard()
@@ -63,6 +67,18 @@ ATicTacToeBoard::ATicTacToeBoard()
 	bSlot7Active = false;
 	bSlot8Active = false;
 	bSlot9Active = false;
+
+	bRow1Finished = false;
+	bRow2Finished = false;
+	bRow3Finished = false;
+	bColumn1Finished = false;
+	bColumn2Finished = false;
+	bColumn3Finished = false;
+	bDiagonal1Finished = false;
+	bDiagonal2Finished = false;
+	bTieGame = false;
+
+	bGameActive = false;
 }
 
 // Called when the game starts or when spawned
@@ -113,6 +129,52 @@ void ATicTacToeBoard::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 	if (GetLocalRole() == ROLE_Authority) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Overlap Begin!"))
+
+		if (OverlappedComponent->GetUniqueID() == SlotCollider1->GetUniqueID()) 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SLOT1 COLLIDED WITH"))
+			SpawnPiece(SlotCollider1);
+		}
+
+		if (OverlappedComponent->GetUniqueID() == SlotCollider2->GetUniqueID())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SLOT2 COLLIDED WITH"))
+		}
+
+		if (OverlappedComponent->GetUniqueID() == SlotCollider3->GetUniqueID())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SLOT3 COLLIDED WITH"))
+		}
+
+		if (OverlappedComponent->GetUniqueID() == SlotCollider4->GetUniqueID())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SLOT4 COLLIDED WITH"))
+		}
+
+		if (OverlappedComponent->GetUniqueID() == SlotCollider5->GetUniqueID())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SLOT5 COLLIDED WITH"))
+		}
+
+		if (OverlappedComponent->GetUniqueID() == SlotCollider6->GetUniqueID())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SLOT6 COLLIDED WITH"))
+		}
+
+		if (OverlappedComponent->GetUniqueID() == SlotCollider7->GetUniqueID())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SLOT7 COLLIDED WITH"))
+		}
+
+		if (OverlappedComponent->GetUniqueID() == SlotCollider8->GetUniqueID())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SLOT8 COLLIDED WITH"))
+		}
+
+		if (OverlappedComponent->GetUniqueID() == SlotCollider9->GetUniqueID())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SLOT9 COLLIDED WITH"))
+		}
 	}
 }
 
@@ -122,4 +184,64 @@ void ATicTacToeBoard::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AAc
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Overlap End!"))
 	}
+}
+
+void ATicTacToeBoard::ResetGame() 
+{
+	if (GetLocalRole() == ROLE_Authority) 
+	{
+		bSlot1Active = false;
+		bSlot2Active = false;
+		bSlot3Active = false;
+		bSlot4Active = false;
+		bSlot5Active = false;
+		bSlot6Active = false;
+		bSlot7Active = false;
+		bSlot8Active = false;
+		bSlot9Active = false;
+
+		bRow1Finished = false;
+		bRow2Finished = false;
+		bRow3Finished = false;
+		bColumn1Finished = false;
+		bColumn2Finished = false;
+		bColumn3Finished = false;
+		bDiagonal1Finished = false;
+		bDiagonal2Finished = false;
+		bTieGame = false;
+
+		bGameActive = false;
+	}
+}
+
+// TODO: MODIFY SO GAME DOES NOT CRASH
+void ATicTacToeBoard::SpawnPiece(UBoxComponent* ActiveSlotCollider)
+{
+	if (GetLocalRole() == ROLE_Authority) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SLOT1 ATTEMPTING TO SPAWN"))
+		if (BoardPieceToSpawn) 
+		{
+			UWorld* World = GetWorld();
+			FActorSpawnParameters SpawnParams;
+
+			if (World) 
+			{
+				//GAME CRASHING BUG. DO NOT KNOW WHY YET.
+				//ATicTacToeBoardPiece* BoardPieceSpawned = World->SpawnActor<ATicTacToeBoardPiece>(BoardPieceToSpawn, GetSpawnPoint(ActiveSlotCollider), FRotator(0.f), SpawnParams);
+				UE_LOG(LogTemp, Warning, TEXT("SLOT1 SPAWNED A PIECE!"))
+			}
+		}
+	}
+}
+
+// TODO: MODIFY SO GAME DOES NOT CRASH
+FVector ATicTacToeBoard::GetSpawnPoint(UBoxComponent* ActiveSlotCollider) 
+{
+	FVector Extent = ActiveSlotCollider->GetScaledBoxExtent();
+	FVector Origin = ActiveSlotCollider->GetComponentLocation();
+
+	FVector Point = UKismetMathLibrary::RandomPointInBoundingBox(Origin, Extent);
+
+	return Point;
 }

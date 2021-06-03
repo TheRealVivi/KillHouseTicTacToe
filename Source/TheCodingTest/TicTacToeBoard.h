@@ -69,23 +69,55 @@ public:
 	bool bPlayer1IDAssigned;
 	bool bPlayer2IDAssigned;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bSlot1Active;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bSlot2Active;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bSlot3Active;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bSlot4Active;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bSlot5Active;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bSlot6Active;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bSlot7Active;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bSlot8Active;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bSlot9Active;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bRow1Finished;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bRow2Finished;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bRow3Finished;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bColumn1Finished;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bColumn2Finished;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bColumn3Finished;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bDiagonal1Finished;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Board Piece Flags")
 	bool bDiagonal2Finished;
 
 	bool bTieGame;

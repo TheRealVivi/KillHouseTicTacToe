@@ -2,6 +2,7 @@
 
 
 #include "TicTacToeBoardPiece.h"
+#include "Components/PointLightComponent.h"
 
 // Sets default values
 ATicTacToeBoardPiece::ATicTacToeBoardPiece()
@@ -9,8 +10,10 @@ ATicTacToeBoardPiece::ATicTacToeBoardPiece()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment(GetRootComponent());
+	Glow = CreateDefaultSubobject<UPointLightComponent>(TEXT("Glow"));
+	Glow->SetupAttachment(GetRootComponent());
+	//Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	//Mesh->SetupAttachment(GetRootComponent());
 
 	bReplicates = true;
 }

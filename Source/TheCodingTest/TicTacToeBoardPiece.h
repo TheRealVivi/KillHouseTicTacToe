@@ -16,7 +16,8 @@ public:
 	ATicTacToeBoardPiece();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh")
-	class UStaticMeshComponent* Mesh;
+	class UPointLightComponent* Glow;
+	//class UStaticMeshComponent* Mesh;
 
 protected:
 	// Called when the game starts or when spawned

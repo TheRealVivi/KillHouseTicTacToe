@@ -145,7 +145,7 @@ void ATicTacToeBoard::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 				Player1ID = Main->GetUniqueID();
 				bPlayer1IDAssigned = true;
 			}
-			else if (Main->GetUniqueID() != Player2ID && !bPlayer2IDAssigned)
+			else if (Main->GetUniqueID() != Player2ID && !bPlayer2IDAssigned && Player1ID != Main->GetUniqueID())
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Player 2 ID has been assigned!"))
 				Player2ID = Main->GetUniqueID();

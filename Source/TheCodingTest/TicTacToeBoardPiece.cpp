@@ -11,7 +11,7 @@ ATicTacToeBoardPiece::ATicTacToeBoardPiece()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Glow = CreateDefaultSubobject<UPointLightComponent>(TEXT("Glow"));
-	Glow->SetupAttachment(GetRootComponent());
+	RootComponent = Glow;
 	//Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	//Mesh->SetupAttachment(GetRootComponent());
 

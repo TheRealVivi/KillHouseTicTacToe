@@ -57,6 +57,12 @@ ATicTacToeBoard::ATicTacToeBoard()
 	SlotCollider9 = CreateDefaultSubobject<UBoxComponent>(TEXT("SlotCollider9"));
 	SlotCollider9->SetupAttachment(GetRootComponent());
 
+	Player1ID = 0;
+	Player2ID = 0;
+
+	bPlayer1IDAssigned = false;
+	bPlayer2IDAssigned = false;
+
 	bReplicates = true;
 	bSlot1Active = false;
 	bSlot2Active = false;
@@ -85,7 +91,7 @@ ATicTacToeBoard::ATicTacToeBoard()
 void ATicTacToeBoard::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (GetLocalRole() == ROLE_Authority) 
 	{
 		SlotCollider1->OnComponentBeginOverlap.AddDynamic(this, &ATicTacToeBoard::OnOverlapBegin);
@@ -128,52 +134,105 @@ void ATicTacToeBoard::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 {
 	if (GetLocalRole() == ROLE_Authority) 
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Overlap Begin!"))
+		AMainPlayer* Main = Cast<AMainPlayer>(OtherActor);
 
-		if (OverlappedComponent->GetUniqueID() == SlotCollider1->GetUniqueID()) 
+		if (Main) 
 		{
-			UE_LOG(LogTemp, Warning, TEXT("SLOT1 COLLIDED WITH"))
-			SpawnPiece(SlotCollider1);
-		}
+			// TEMPORARY, NEED TO MAKE AN OBJECT THAT FEEDS THIS OBJECT THE IDS, LIKE A BUTTON.
+			if (Main->GetUniqueID() != Player1ID && !bPlayer1IDAssigned) 
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Player 1 ID has been assigned!"))
+				Player1ID = Main->GetUniqueID();
+				bPlayer1IDAssigned = true;
+			}
+			else if (Main->GetUniqueID() != Player2ID && !bPlayer2IDAssigned)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Player 2 ID has been assigned!"))
+				Player2ID = Main->GetUniqueID();
+				bPlayer2IDAssigned = true;
+			}
 
-		if (OverlappedComponent->GetUniqueID() == SlotCollider2->GetUniqueID())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("SLOT2 COLLIDED WITH"))
-		}
 
-		if (OverlappedComponent->GetUniqueID() == SlotCollider3->GetUniqueID())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("SLOT3 COLLIDED WITH"))
-		}
+			// TEMPORARY, NEED TO MAKE AN OBJECT THAT FEEDS THIS OBJECT THE IDS, LIKE A BUTTON.
 
-		if (OverlappedComponent->GetUniqueID() == SlotCollider4->GetUniqueID())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("SLOT4 COLLIDED WITH"))
-		}
 
-		if (OverlappedComponent->GetUniqueID() == SlotCollider5->GetUniqueID())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("SLOT5 COLLIDED WITH"))
-		}
 
-		if (OverlappedComponent->GetUniqueID() == SlotCollider6->GetUniqueID())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("SLOT6 COLLIDED WITH"))
-		}
 
-		if (OverlappedComponent->GetUniqueID() == SlotCollider7->GetUniqueID())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("SLOT7 COLLIDED WITH"))
-		}
+			UE_LOG(LogTemp, Warning, TEXT("Overlap Begin!"))
 
-		if (OverlappedComponent->GetUniqueID() == SlotCollider8->GetUniqueID())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("SLOT8 COLLIDED WITH"))
-		}
+			if (OverlappedComponent->GetUniqueID() == SlotCollider1->GetUniqueID() && !bSlot1Active)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("SLOT1 COLLIDED WITH"))
+				SpawnPiece(SlotCollider1, GetSpawnPoint(SlotCollider1), Main->GetUniqueID());
+				bSlot1Active = true;
+				Main->bSlot1Active = true;
+			}
 
-		if (OverlappedComponent->GetUniqueID() == SlotCollider9->GetUniqueID())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("SLOT9 COLLIDED WITH"))
+			if (OverlappedComponent->GetUniqueID() == SlotCollider2->GetUniqueID() && !bSlot2Active)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("SLOT2 COLLIDED WITH"))
+				SpawnPiece(SlotCollider2, GetSpawnPoint(SlotCollider2), Main->GetUniqueID());
+				bSlot2Active = true;
+				Main->bSlot2Active = true;
+			}
+
+			if (OverlappedComponent->GetUniqueID() == SlotCollider3->GetUniqueID() && !bSlot3Active)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("SLOT3 COLLIDED WITH"))
+				SpawnPiece(SlotCollider3, GetSpawnPoint(SlotCollider3), Main->GetUniqueID());
+				bSlot3Active = true;
+				Main->bSlot3Active = true;
+			}
+
+			if (OverlappedComponent->GetUniqueID() == SlotCollider4->GetUniqueID() && !bSlot4Active)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("SLOT4 COLLIDED WITH"))
+				SpawnPiece(SlotCollider4, GetSpawnPoint(SlotCollider4), Main->GetUniqueID());
+				bSlot4Active = true;
+				Main->bSlot4Active = true;
+			}
+
+			if (OverlappedComponent->GetUniqueID() == SlotCollider5->GetUniqueID() && !bSlot5Active)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("SLOT5 COLLIDED WITH"))
+				SpawnPiece(SlotCollider5, GetSpawnPoint(SlotCollider5), Main->GetUniqueID());
+				bSlot5Active = true;
+				Main->bSlot5Active = true;
+			}
+
+			if (OverlappedComponent->GetUniqueID() == SlotCollider6->GetUniqueID() && !bSlot6Active)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("SLOT6 COLLIDED WITH"))
+				SpawnPiece(SlotCollider6, GetSpawnPoint(SlotCollider6), Main->GetUniqueID());
+				bSlot6Active = true;
+				Main->bSlot6Active = true;
+			}
+
+			if (OverlappedComponent->GetUniqueID() == SlotCollider7->GetUniqueID() && !bSlot7Active)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("SLOT7 COLLIDED WITH"))
+				SpawnPiece(SlotCollider7, GetSpawnPoint(SlotCollider7), Main->GetUniqueID());
+				bSlot7Active = true;
+				Main->bSlot7Active = true;
+			}
+
+			if (OverlappedComponent->GetUniqueID() == SlotCollider8->GetUniqueID() && !bSlot8Active)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("SLOT8 COLLIDED WITH"))
+				SpawnPiece(SlotCollider8, GetSpawnPoint(SlotCollider8), Main->GetUniqueID());
+				bSlot8Active = true;
+				Main->bSlot8Active = true;
+			}
+
+			if (OverlappedComponent->GetUniqueID() == SlotCollider9->GetUniqueID() && !bSlot9Active)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("SLOT9 COLLIDED WITH"))
+				SpawnPiece(SlotCollider9, GetSpawnPoint(SlotCollider9), Main->GetUniqueID());
+				bSlot9Active = true;
+				Main->bSlot9Active = true;
+			}
+
+			CheckBoard(Main);
 		}
 	}
 }
@@ -183,6 +242,62 @@ void ATicTacToeBoard::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AAc
 	if (GetLocalRole() == ROLE_Authority) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Overlap End!"))
+	}
+}
+
+void ATicTacToeBoard::CheckBoard(AMainPlayer* Main) 
+{
+	if (Main) 
+	{
+		if (Main->bSlot1Active && Main->bSlot2Active && Main->bSlot3Active && !Main->bRow1Finished)
+		{
+			Main->bRow1Finished = true;
+		}
+		else if (Main->bSlot4Active && Main->bSlot5Active && Main->bSlot6Active && !Main->bRow2Finished)
+		{
+			Main->bRow2Finished = true;
+		}
+		else if (Main->bSlot7Active && Main->bSlot8Active && Main->bSlot9Active && !Main->bRow3Finished)
+		{
+			Main->bRow3Finished = true;
+		}
+		else if (Main->bSlot1Active && Main->bSlot4Active && Main->bSlot7Active && !Main->bColumn1Finished)
+		{
+			Main->bColumn1Finished = true;
+		}
+		else if (Main->bSlot2Active && Main->bSlot5Active && Main->bSlot8Active && !Main->bColumn2Finished)
+		{
+			Main->bColumn2Finished = true;
+		}
+		else if (Main->bSlot3Active && Main->bSlot6Active && Main->bSlot9Active && !Main->bColumn3Finished)
+		{
+			Main->bColumn3Finished = true;
+		}
+		else if (Main->bSlot1Active && Main->bSlot5Active && Main->bSlot9Active && !Main->bDiagonal1Finished)
+		{
+			Main->bDiagonal1Finished = true;
+		}
+		else if (Main->bSlot3Active && Main->bSlot5Active && Main->bSlot7Active && !Main->bDiagonal2Finished)
+		{
+			Main->bDiagonal2Finished = true;
+		}
+
+		if (Main->bRow1Finished || Main->bRow2Finished || Main->bRow3Finished || Main->bColumn1Finished || Main->bColumn2Finished || Main->bColumn3Finished
+			|| Main->bDiagonal1Finished || Main->bDiagonal2Finished) 
+		{
+			AwardPlayer(Main);
+			ResetGame();
+
+		}
+	}
+}
+
+void ATicTacToeBoard::AwardPlayer(AMainPlayer* Main) 
+{
+	if (Main) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AWARDING POINTS"))
+		Main->PointsEarned += 5;
 	}
 }
 
@@ -214,28 +329,30 @@ void ATicTacToeBoard::ResetGame()
 	}
 }
 
-// TODO: MODIFY SO GAME DOES NOT CRASH
-void ATicTacToeBoard::SpawnPiece(UBoxComponent* ActiveSlotCollider)
+
+void ATicTacToeBoard::SpawnPiece(UBoxComponent* ActiveSlotCollider, const FVector& Location, uint32 ActivePlayerID)
 {
 	if (GetLocalRole() == ROLE_Authority) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SLOT1 ATTEMPTING TO SPAWN"))
-		if (BoardPieceToSpawn) 
+		if (BoardPieceToSpawn1 && BoardPieceToSpawn2) 
 		{
 			UWorld* World = GetWorld();
 			FActorSpawnParameters SpawnParams;
 
 			if (World) 
 			{
-				//GAME CRASHING BUG. DO NOT KNOW WHY YET.
-				//ATicTacToeBoardPiece* BoardPieceSpawned = World->SpawnActor<ATicTacToeBoardPiece>(BoardPieceToSpawn, GetSpawnPoint(ActiveSlotCollider), FRotator(0.f), SpawnParams);
+				if(ActivePlayerID == Player1ID)
+					ATicTacToeBoardPiece* BoardPieceSpawned = World->SpawnActor<ATicTacToeBoardPiece>(BoardPieceToSpawn1, Location, FRotator(0.f), SpawnParams);
+				else if(ActivePlayerID == Player2ID)
+					ATicTacToeBoardPiece* BoardPieceSpawned = World->SpawnActor<ATicTacToeBoardPiece>(BoardPieceToSpawn2, Location, FRotator(0.f), SpawnParams);
 				UE_LOG(LogTemp, Warning, TEXT("SLOT1 SPAWNED A PIECE!"))
 			}
 		}
 	}
 }
 
-// TODO: MODIFY SO GAME DOES NOT CRASH
+
 FVector ATicTacToeBoard::GetSpawnPoint(UBoxComponent* ActiveSlotCollider) 
 {
 	FVector Extent = ActiveSlotCollider->GetScaledBoxExtent();

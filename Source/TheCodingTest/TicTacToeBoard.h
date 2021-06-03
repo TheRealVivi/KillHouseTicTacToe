@@ -58,7 +58,16 @@ public:
 	class UBoxComponent* SlotCollider9;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Board Pieces")
-	TSubclassOf<class ATicTacToeBoardPiece> BoardPieceToSpawn;
+	TSubclassOf<class ATicTacToeBoardPiece> BoardPieceToSpawn1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Board Pieces")
+	TSubclassOf<class ATicTacToeBoardPiece> BoardPieceToSpawn2;
+
+	uint32 Player1ID;
+	uint32 Player2ID;
+
+	bool bPlayer1IDAssigned;
+	bool bPlayer2IDAssigned;
 
 	bool bSlot1Active;
 	bool bSlot2Active;
@@ -86,6 +95,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	void CheckBoard(class AMainPlayer* Main);
+	void AwardPlayer(class AMainPlayer* Main);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -100,7 +113,7 @@ public:
 	void ResetGame();
 
 	UFUNCTION()
-	void SpawnPiece(UBoxComponent* ActiveSlotCollider);
+	void SpawnPiece(UBoxComponent* ActiveSlotCollider, const FVector& Location, uint32 ActivePlayerID);
 
 	UFUNCTION()
 	FVector GetSpawnPoint(UBoxComponent* ActiveSlotCollider);

@@ -81,6 +81,27 @@ public:
 	bool bRMBDown; // is rmb down
 	bool bWeaponEquipped; // Does player have a weapon equipped
 
+	bool bSlot1Active;
+	bool bSlot2Active;
+	bool bSlot3Active;
+	bool bSlot4Active;
+	bool bSlot5Active;
+	bool bSlot6Active;
+	bool bSlot7Active;
+	bool bSlot8Active;
+	bool bSlot9Active;
+
+	bool bRow1Finished;
+	bool bRow2Finished;
+	bool bRow3Finished;
+	bool bColumn1Finished;
+	bool bColumn2Finished;
+	bool bColumn3Finished;
+	bool bDiagonal1Finished;
+	bool bDiagonal2Finished;
+
+	bool bTieGame;
+	bool bGameActive;
 
 protected:
 	// Called when the game starts or when spawned

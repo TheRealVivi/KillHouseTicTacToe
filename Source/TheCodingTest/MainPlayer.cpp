@@ -34,6 +34,8 @@ AMainPlayer::AMainPlayer()
 	// the controller orientation
 	FollowingCamera->bUsePawnControlRotation = false;
 
+	PieceColor = FLinearColor(0.f, 0.f, 0.f, 0.f);
+
 	// Don't rotate when the player rotates (Camera rotates only)
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationPitch = false;
@@ -292,6 +294,7 @@ void AMainPlayer::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMainPlayer, Exp);
 	DOREPLIFETIME(AMainPlayer, MaxExp);
 	DOREPLIFETIME(AMainPlayer, PointsEarned);
+	DOREPLIFETIME(AMainPlayer, PieceColor);
 }
 
 void AMainPlayer::OnNameUpdate() 
@@ -385,6 +388,19 @@ void AMainPlayer::OnPointsEarnedUpdate()
 	}
 }
 
+void AMainPlayer::OnPieceColorUpdate()
+{
+	if (IsLocallyControlled())
+	{
+
+	}
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+
+	}
+}
+
 void AMainPlayer::OnRep_Name()
 {
 	OnNameUpdate();
@@ -418,4 +434,9 @@ void AMainPlayer::OnRep_Level()
 void AMainPlayer::OnRep_PointsEarned()
 {
 	OnPointsEarnedUpdate();
+}
+
+void AMainPlayer::OnRep_PieceColor() 
+{
+	OnPieceColorUpdate();
 }

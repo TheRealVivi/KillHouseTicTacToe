@@ -141,20 +141,24 @@ void ATicTacToeBoard::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 		if (Main) 
 		{
 			// TEMPORARY, NEED TO MAKE AN OBJECT THAT FEEDS THIS OBJECT THE IDS, LIKE A BUTTON.
-			if (Main->GetUniqueID() != Player1ID && !bPlayer1IDAssigned) 
+
+			if (Main->GetUniqueID() != Player1ID && !bPlayer1IDAssigned)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Player 1 ID has been assigned!"))
-				Player1ID = Main->GetUniqueID();
+					Player1ID = Main->GetUniqueID();
 				bPlayer1IDAssigned = true;
 			}
 			else if (Main->GetUniqueID() != Player2ID && !bPlayer2IDAssigned && Player1ID != Main->GetUniqueID())
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Player 2 ID has been assigned!"))
-				Player2ID = Main->GetUniqueID();
+					Player2ID = Main->GetUniqueID();
 				bPlayer2IDAssigned = true;
 			}
 
+			//if(!bPlayer1IDAssigned || !bPlayer2IDAssigned)
+			//	SetPlayerID(Main->GetUniqueID());
 
+			
 			// TEMPORARY, NEED TO MAKE AN OBJECT THAT FEEDS THIS OBJECT THE IDS, LIKE A BUTTON.
 
 
@@ -357,50 +361,143 @@ void ATicTacToeBoard::ActivateSlot(UBoxComponent* ActiveSlotCollider, AMainPlaye
 
 void ATicTacToeBoard::SlotActivated_Implementation(AMainPlayer* Main, uint32 SlotNumber)
 {
+	if (Main->GetUniqueID() == Player1ID) 
+	{
+		Main->PieceColor = FLinearColor(0.f, 0.f, 1.f, 1.f);
+	}
+	else if (Main->GetUniqueID() == Player2ID)
+	{
+		Main->PieceColor = FLinearColor(1.f, 0.f, 0.f, 1.f);
+	}
+
 	if (SlotNumber == 1)
 	{
 		bSlot1Active = true;
 		Main->bSlot1Active = true;
+		Slot1Color = Main->PieceColor;
 	}
 	else if (SlotNumber == 2)
 	{
 		bSlot2Active = true;
 		Main->bSlot2Active = true;
+		Slot2Color = Main->PieceColor;
 	}
 	else if (SlotNumber == 3)
 	{
 		bSlot3Active = true;
 		Main->bSlot3Active = true;
+		Slot3Color = Main->PieceColor;
 	}
 	else if (SlotNumber == 4)
 	{
 		bSlot4Active = true;
 		Main->bSlot4Active = true;
+		Slot4Color = Main->PieceColor;
 	}
 	else if (SlotNumber == 5)
 	{
 		bSlot5Active = true;
 		Main->bSlot5Active = true;
+		Slot5Color = Main->PieceColor;
 	}
 	else if (SlotNumber == 6)
 	{
 		bSlot6Active = true;
 		Main->bSlot6Active = true;
+		Slot6Color = Main->PieceColor;
 	}
 	else if (SlotNumber == 7)
 	{
 		bSlot7Active = true;
 		Main->bSlot7Active = true;
+		Slot7Color = Main->PieceColor;
 	}
 	else if (SlotNumber == 8)
 	{
 		bSlot8Active = true;
 		Main->bSlot8Active = true;
+		Slot8Color = Main->PieceColor;
 	}
 	else if (SlotNumber == 9)
 	{
 		bSlot9Active = true;
 		Main->bSlot9Active = true;
+		Slot9Color = Main->PieceColor;
 	}
 }
 
+void ATicTacToeBoard::SetPlayerID_Implementation(uint32 MainPlayerID) 
+{
+	if (MainPlayerID != Player1ID && !bPlayer1IDAssigned)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player 1 ID has been assigned!"))
+		Player1ID = MainPlayerID;
+		bPlayer1IDAssigned = true;
+	}
+	else if (MainPlayerID != Player2ID && !bPlayer2IDAssigned && Player1ID != MainPlayerID)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player 2 ID has been assigned!"))
+		Player2ID = MainPlayerID;
+		bPlayer2IDAssigned = true;
+	}
+}
+
+void ATicTacToeBoard::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// Replicate the following variables
+	DOREPLIFETIME(ATicTacToeBoard, Slot1Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot2Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot3Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot4Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot5Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot6Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot7Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot8Color);
+}
+
+void ATicTacToeBoard::OnRep_Slot1Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot2Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot3Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot4Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot5Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot6Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot7Color() 
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot8Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot9Color()
+{
+
+}

@@ -15,6 +15,8 @@ public:
 	// Sets default values for this actor's properties
 	ATicTacToeBoard();
 
+	//void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Structure")
 	class USceneComponent* RootSceneComponent;
 
@@ -130,6 +132,7 @@ protected:
 private:
 	void CheckBoard(class AMainPlayer* Main);
 	void AwardPlayer(class AMainPlayer* Main);
+	//void OnbSlot7ActiveUpdate();
 
 public:	
 	// Called every frame
@@ -149,4 +152,11 @@ public:
 
 	UFUNCTION()
 	FVector GetSpawnPoint(UBoxComponent* ActiveSlotCollider);
+
+	void ActivateSlot(UBoxComponent* ActiveSlotCollider, AMainPlayer* Main, uint32 SlotNumber);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void SlotActivated(class AMainPlayer* Main, uint32 SlotNumber);
+
+
 };

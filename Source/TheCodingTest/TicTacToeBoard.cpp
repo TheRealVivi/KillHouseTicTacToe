@@ -6,6 +6,8 @@
 #include "Components/SceneComponent.h"
 #include "Engine/World.h"
 #include "MainPlayer.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/Engine.h"
 #include "TicTacToeBoardPiece.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -163,73 +165,56 @@ void ATicTacToeBoard::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 			if (OverlappedComponent->GetUniqueID() == SlotCollider1->GetUniqueID() && !bSlot1Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT1 COLLIDED WITH"))
-				SpawnPiece(SlotCollider1, GetSpawnPoint(SlotCollider1), Main->GetUniqueID());
-				bSlot1Active = true;
-				Main->bSlot1Active = true;
+				ActivateSlot(SlotCollider1, Main, 1);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider2->GetUniqueID() && !bSlot2Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT2 COLLIDED WITH"))
-				SpawnPiece(SlotCollider2, GetSpawnPoint(SlotCollider2), Main->GetUniqueID());
-				bSlot2Active = true;
-				Main->bSlot2Active = true;
+				ActivateSlot(SlotCollider2, Main, 2);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider3->GetUniqueID() && !bSlot3Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT3 COLLIDED WITH"))
-				SpawnPiece(SlotCollider3, GetSpawnPoint(SlotCollider3), Main->GetUniqueID());
-				bSlot3Active = true;
-				Main->bSlot3Active = true;
+				ActivateSlot(SlotCollider3, Main, 3);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider4->GetUniqueID() && !bSlot4Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT4 COLLIDED WITH"))
-				SpawnPiece(SlotCollider4, GetSpawnPoint(SlotCollider4), Main->GetUniqueID());
-				bSlot4Active = true;
-				Main->bSlot4Active = true;
+				ActivateSlot(SlotCollider4, Main, 4);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider5->GetUniqueID() && !bSlot5Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT5 COLLIDED WITH"))
-				SpawnPiece(SlotCollider5, GetSpawnPoint(SlotCollider5), Main->GetUniqueID());
-				bSlot5Active = true;
-				Main->bSlot5Active = true;
+				ActivateSlot(SlotCollider5, Main, 5);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider6->GetUniqueID() && !bSlot6Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT6 COLLIDED WITH"))
-				SpawnPiece(SlotCollider6, GetSpawnPoint(SlotCollider6), Main->GetUniqueID());
-				bSlot6Active = true;
-				Main->bSlot6Active = true;
+				ActivateSlot(SlotCollider1, Main, 6);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider7->GetUniqueID() && !bSlot7Active)
 			{
+				// Can probably shove this repeated code into one function with signature (UBoxComponent, AMainPlayer, bool, bool)
 				UE_LOG(LogTemp, Warning, TEXT("SLOT7 COLLIDED WITH"))
-				SpawnPiece(SlotCollider7, GetSpawnPoint(SlotCollider7), Main->GetUniqueID());
-				bSlot7Active = true;
-				Main->bSlot7Active = true;
+				ActivateSlot(SlotCollider7, Main, 7);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider8->GetUniqueID() && !bSlot8Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT8 COLLIDED WITH"))
-				SpawnPiece(SlotCollider8, GetSpawnPoint(SlotCollider8), Main->GetUniqueID());
-				bSlot8Active = true;
-				Main->bSlot8Active = true;
+				ActivateSlot(SlotCollider8, Main, 8);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider9->GetUniqueID() && !bSlot9Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT9 COLLIDED WITH"))
-				SpawnPiece(SlotCollider9, GetSpawnPoint(SlotCollider9), Main->GetUniqueID());
-				bSlot9Active = true;
-				Main->bSlot9Active = true;
+				ActivateSlot(SlotCollider9, Main, 9);
 			}
 
 			CheckBoard(Main);
@@ -362,3 +347,60 @@ FVector ATicTacToeBoard::GetSpawnPoint(UBoxComponent* ActiveSlotCollider)
 
 	return Point;
 }
+
+void ATicTacToeBoard::ActivateSlot(UBoxComponent* ActiveSlotCollider, AMainPlayer* Main, uint32 SlotNumber) 
+{
+	UE_LOG(LogTemp, Warning, TEXT("SLOT7 COLLIDED WITH"))
+	SpawnPiece(ActiveSlotCollider, GetSpawnPoint(ActiveSlotCollider), Main->GetUniqueID());
+	SlotActivated(Main, SlotNumber);
+}
+
+void ATicTacToeBoard::SlotActivated_Implementation(AMainPlayer* Main, uint32 SlotNumber)
+{
+	if (SlotNumber == 1)
+	{
+		bSlot1Active = true;
+		Main->bSlot1Active = true;
+	}
+	else if (SlotNumber == 2)
+	{
+		bSlot2Active = true;
+		Main->bSlot2Active = true;
+	}
+	else if (SlotNumber == 3)
+	{
+		bSlot3Active = true;
+		Main->bSlot3Active = true;
+	}
+	else if (SlotNumber == 4)
+	{
+		bSlot4Active = true;
+		Main->bSlot4Active = true;
+	}
+	else if (SlotNumber == 5)
+	{
+		bSlot5Active = true;
+		Main->bSlot5Active = true;
+	}
+	else if (SlotNumber == 6)
+	{
+		bSlot6Active = true;
+		Main->bSlot6Active = true;
+	}
+	else if (SlotNumber == 7)
+	{
+		bSlot7Active = true;
+		Main->bSlot7Active = true;
+	}
+	else if (SlotNumber == 8)
+	{
+		bSlot8Active = true;
+		Main->bSlot8Active = true;
+	}
+	else if (SlotNumber == 9)
+	{
+		bSlot9Active = true;
+		Main->bSlot9Active = true;
+	}
+}
+

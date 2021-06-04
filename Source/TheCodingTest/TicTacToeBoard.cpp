@@ -6,6 +6,8 @@
 #include "Components/SceneComponent.h"
 #include "Engine/World.h"
 #include "MainPlayer.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/Engine.h"
 #include "TicTacToeBoardPiece.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -139,20 +141,24 @@ void ATicTacToeBoard::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 		if (Main) 
 		{
 			// TEMPORARY, NEED TO MAKE AN OBJECT THAT FEEDS THIS OBJECT THE IDS, LIKE A BUTTON.
-			if (Main->GetUniqueID() != Player1ID && !bPlayer1IDAssigned) 
+
+			if (Main->GetUniqueID() != Player1ID && !bPlayer1IDAssigned)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Player 1 ID has been assigned!"))
-				Player1ID = Main->GetUniqueID();
+					Player1ID = Main->GetUniqueID();
 				bPlayer1IDAssigned = true;
 			}
 			else if (Main->GetUniqueID() != Player2ID && !bPlayer2IDAssigned && Player1ID != Main->GetUniqueID())
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Player 2 ID has been assigned!"))
-				Player2ID = Main->GetUniqueID();
+					Player2ID = Main->GetUniqueID();
 				bPlayer2IDAssigned = true;
 			}
 
+			//if(!bPlayer1IDAssigned || !bPlayer2IDAssigned)
+			//	SetPlayerID(Main->GetUniqueID());
 
+			
 			// TEMPORARY, NEED TO MAKE AN OBJECT THAT FEEDS THIS OBJECT THE IDS, LIKE A BUTTON.
 
 
@@ -163,73 +169,56 @@ void ATicTacToeBoard::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 			if (OverlappedComponent->GetUniqueID() == SlotCollider1->GetUniqueID() && !bSlot1Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT1 COLLIDED WITH"))
-				SpawnPiece(SlotCollider1, GetSpawnPoint(SlotCollider1), Main->GetUniqueID());
-				bSlot1Active = true;
-				Main->bSlot1Active = true;
+				ActivateSlot(SlotCollider1, Main, 1);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider2->GetUniqueID() && !bSlot2Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT2 COLLIDED WITH"))
-				SpawnPiece(SlotCollider2, GetSpawnPoint(SlotCollider2), Main->GetUniqueID());
-				bSlot2Active = true;
-				Main->bSlot2Active = true;
+				ActivateSlot(SlotCollider2, Main, 2);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider3->GetUniqueID() && !bSlot3Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT3 COLLIDED WITH"))
-				SpawnPiece(SlotCollider3, GetSpawnPoint(SlotCollider3), Main->GetUniqueID());
-				bSlot3Active = true;
-				Main->bSlot3Active = true;
+				ActivateSlot(SlotCollider3, Main, 3);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider4->GetUniqueID() && !bSlot4Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT4 COLLIDED WITH"))
-				SpawnPiece(SlotCollider4, GetSpawnPoint(SlotCollider4), Main->GetUniqueID());
-				bSlot4Active = true;
-				Main->bSlot4Active = true;
+				ActivateSlot(SlotCollider4, Main, 4);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider5->GetUniqueID() && !bSlot5Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT5 COLLIDED WITH"))
-				SpawnPiece(SlotCollider5, GetSpawnPoint(SlotCollider5), Main->GetUniqueID());
-				bSlot5Active = true;
-				Main->bSlot5Active = true;
+				ActivateSlot(SlotCollider5, Main, 5);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider6->GetUniqueID() && !bSlot6Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT6 COLLIDED WITH"))
-				SpawnPiece(SlotCollider6, GetSpawnPoint(SlotCollider6), Main->GetUniqueID());
-				bSlot6Active = true;
-				Main->bSlot6Active = true;
+				ActivateSlot(SlotCollider1, Main, 6);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider7->GetUniqueID() && !bSlot7Active)
 			{
+				// Can probably shove this repeated code into one function with signature (UBoxComponent, AMainPlayer, bool, bool)
 				UE_LOG(LogTemp, Warning, TEXT("SLOT7 COLLIDED WITH"))
-				SpawnPiece(SlotCollider7, GetSpawnPoint(SlotCollider7), Main->GetUniqueID());
-				bSlot7Active = true;
-				Main->bSlot7Active = true;
+				ActivateSlot(SlotCollider7, Main, 7);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider8->GetUniqueID() && !bSlot8Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT8 COLLIDED WITH"))
-				SpawnPiece(SlotCollider8, GetSpawnPoint(SlotCollider8), Main->GetUniqueID());
-				bSlot8Active = true;
-				Main->bSlot8Active = true;
+				ActivateSlot(SlotCollider8, Main, 8);
 			}
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider9->GetUniqueID() && !bSlot9Active)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SLOT9 COLLIDED WITH"))
-				SpawnPiece(SlotCollider9, GetSpawnPoint(SlotCollider9), Main->GetUniqueID());
-				bSlot9Active = true;
-				Main->bSlot9Active = true;
+				ActivateSlot(SlotCollider9, Main, 9);
 			}
 
 			CheckBoard(Main);
@@ -361,4 +350,154 @@ FVector ATicTacToeBoard::GetSpawnPoint(UBoxComponent* ActiveSlotCollider)
 	FVector Point = UKismetMathLibrary::RandomPointInBoundingBox(Origin, Extent);
 
 	return Point;
+}
+
+void ATicTacToeBoard::ActivateSlot(UBoxComponent* ActiveSlotCollider, AMainPlayer* Main, uint32 SlotNumber) 
+{
+	UE_LOG(LogTemp, Warning, TEXT("SLOT7 COLLIDED WITH"))
+	SpawnPiece(ActiveSlotCollider, GetSpawnPoint(ActiveSlotCollider), Main->GetUniqueID());
+	SlotActivated(Main, SlotNumber);
+}
+
+void ATicTacToeBoard::SlotActivated_Implementation(AMainPlayer* Main, uint32 SlotNumber)
+{
+	if (Main->GetUniqueID() == Player1ID) 
+	{
+		Main->PieceColor = FLinearColor(0.f, 0.f, 1.f, 1.f);
+	}
+	else if (Main->GetUniqueID() == Player2ID)
+	{
+		Main->PieceColor = FLinearColor(1.f, 0.f, 0.f, 1.f);
+	}
+
+	if (SlotNumber == 1)
+	{
+		bSlot1Active = true;
+		Main->bSlot1Active = true;
+		Slot1Color = Main->PieceColor;
+	}
+	else if (SlotNumber == 2)
+	{
+		bSlot2Active = true;
+		Main->bSlot2Active = true;
+		Slot2Color = Main->PieceColor;
+	}
+	else if (SlotNumber == 3)
+	{
+		bSlot3Active = true;
+		Main->bSlot3Active = true;
+		Slot3Color = Main->PieceColor;
+	}
+	else if (SlotNumber == 4)
+	{
+		bSlot4Active = true;
+		Main->bSlot4Active = true;
+		Slot4Color = Main->PieceColor;
+	}
+	else if (SlotNumber == 5)
+	{
+		bSlot5Active = true;
+		Main->bSlot5Active = true;
+		Slot5Color = Main->PieceColor;
+	}
+	else if (SlotNumber == 6)
+	{
+		bSlot6Active = true;
+		Main->bSlot6Active = true;
+		Slot6Color = Main->PieceColor;
+	}
+	else if (SlotNumber == 7)
+	{
+		bSlot7Active = true;
+		Main->bSlot7Active = true;
+		Slot7Color = Main->PieceColor;
+	}
+	else if (SlotNumber == 8)
+	{
+		bSlot8Active = true;
+		Main->bSlot8Active = true;
+		Slot8Color = Main->PieceColor;
+	}
+	else if (SlotNumber == 9)
+	{
+		bSlot9Active = true;
+		Main->bSlot9Active = true;
+		Slot9Color = Main->PieceColor;
+	}
+}
+
+void ATicTacToeBoard::SetPlayerID_Implementation(uint32 MainPlayerID) 
+{
+	if (MainPlayerID != Player1ID && !bPlayer1IDAssigned)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player 1 ID has been assigned!"))
+		Player1ID = MainPlayerID;
+		bPlayer1IDAssigned = true;
+	}
+	else if (MainPlayerID != Player2ID && !bPlayer2IDAssigned && Player1ID != MainPlayerID)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player 2 ID has been assigned!"))
+		Player2ID = MainPlayerID;
+		bPlayer2IDAssigned = true;
+	}
+}
+
+void ATicTacToeBoard::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// Replicate the following variables
+	DOREPLIFETIME(ATicTacToeBoard, Slot1Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot2Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot3Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot4Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot5Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot6Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot7Color);
+	DOREPLIFETIME(ATicTacToeBoard, Slot8Color);
+}
+
+void ATicTacToeBoard::OnRep_Slot1Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot2Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot3Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot4Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot5Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot6Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot7Color() 
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot8Color()
+{
+
+}
+
+void ATicTacToeBoard::OnRep_Slot9Color()
+{
+
 }

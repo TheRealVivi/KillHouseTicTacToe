@@ -75,6 +75,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Start Point")
 	FVector StartPoint; // Where player spawns.
 
+	UPROPERTY(ReplicatedUsing = OnRep_PieceColor, EditAnywhere, BlueprintReadWrite, Category = "Board Pieces")
+	FLinearColor PieceColor;
+
 	bool bShiftKeyDown; // is shift key down
 	bool bEDown; // is E key down
 	bool bLMBDown; // is lmb down
@@ -114,6 +117,7 @@ protected:
 	void OnLevelUpdate();
 	void OnNameUpdate();
 	void OnPointsEarnedUpdate();
+	void OnPieceColorUpdate();
 
 public:	
 	// Called every frame
@@ -184,5 +188,6 @@ public:
 	UFUNCTION()
 	void OnRep_PointsEarned();
 
-
+	UFUNCTION()
+	void OnRep_PieceColor();
 };

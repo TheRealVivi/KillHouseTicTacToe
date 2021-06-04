@@ -171,7 +171,7 @@ public:
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UFUNCTION()
+	UFUNCTION(NetMulticast, Reliable)
 	void ResetGame();
 
 	UFUNCTION()

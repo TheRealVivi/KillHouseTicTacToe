@@ -147,12 +147,16 @@ void ATicTacToeBoard::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 				UE_LOG(LogTemp, Warning, TEXT("Player 1 ID has been assigned!"))
 					Player1ID = Main->GetUniqueID();
 				bPlayer1IDAssigned = true;
+
+				Main->ResetGameStatus();
 			}
 			else if (Main->GetUniqueID() != Player2ID && !bPlayer2IDAssigned && Player1ID != Main->GetUniqueID())
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Player 2 ID has been assigned!"))
 					Player2ID = Main->GetUniqueID();
 				bPlayer2IDAssigned = true;
+
+				Main->ResetGameStatus();
 			}
 
 			//if(!bPlayer1IDAssigned || !bPlayer2IDAssigned)
@@ -290,10 +294,8 @@ void ATicTacToeBoard::AwardPlayer(AMainPlayer* Main)
 	}
 }
 
-void ATicTacToeBoard::ResetGame() 
+void ATicTacToeBoard::ResetGame_Implementation()
 {
-	if (GetLocalRole() == ROLE_Authority) 
-	{
 		bSlot1Active = false;
 		bSlot2Active = false;
 		bSlot3Active = false;
@@ -315,7 +317,10 @@ void ATicTacToeBoard::ResetGame()
 		bTieGame = false;
 
 		bGameActive = false;
-	}
+		Player1ID = 0;
+		Player2ID = 0;
+		bPlayer1IDAssigned = false;
+		bPlayer2IDAssigned = false;
 }
 
 

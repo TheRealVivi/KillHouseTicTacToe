@@ -168,6 +168,9 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowingCamera() const { return FollowingCamera; }
 
 	UFUNCTION()
+	void ResetGameStatus();
+
+	UFUNCTION()
 	void OnRep_Name();
 
 	UFUNCTION()

@@ -282,6 +282,30 @@ void AMainPlayer::Die()
 	Health = MaxHealth;
 }
 
+void AMainPlayer::ResetGameStatus()
+{
+	bSlot1Active = false;
+	bSlot2Active = false;
+	bSlot3Active = false;
+	bSlot4Active = false;
+	bSlot5Active = false;
+	bSlot6Active = false;
+	bSlot7Active = false;
+	bSlot8Active = false;
+	bSlot9Active = false;
+
+	bRow1Finished = false;
+	bRow2Finished = false;
+	bRow3Finished = false;
+
+	bColumn1Finished = false;
+	bColumn2Finished = false;
+	bColumn3Finished = false;
+
+	bDiagonal1Finished = false;
+	bDiagonal2Finished = false;
+}
+
 void AMainPlayer::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLifetimeProps) const 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

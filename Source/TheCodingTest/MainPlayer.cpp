@@ -307,6 +307,93 @@ void AMainPlayer::ResetGameStatus()
 	bDiagonal2Finished = false;
 }
 
+// Increases player exp
+// If new exp amount is greater than current max exp, then level up
+void AMainPlayer::IncreaseExp(float ExpAmount) 
+{
+	float NewExpAmount = ExpAmount + GetExp();
+	if (NewExpAmount >= GetMaxExp()) // More than enough exp to level up!
+	{
+		LevelUp(ExpAmount - (GetMaxExp() - GetExp()));
+	}
+	else // Just give exp
+	{
+		SetExp(NewExpAmount);
+	}
+}
+
+/**
+* Increases players level by 1, and gives remaining exp amount
+* If Player has exceeded the max level, then just give exp.
+*/
+void AMainPlayer::LevelUp(float RemainingExpAmount) 
+{
+	int32 NextLevel = GetLevel() + 1;
+	if (GetLevel() < GetMaxLevel()) 
+	{
+		SetLevel(NextLevel);
+		SetExp(RemainingExpAmount);
+		SetMaxExp(GetLevel() * GetMaxExp());
+	}
+	else 
+	{
+		SetExp(RemainingExpAmount);
+	}
+}
+
+// Setters and Getters
+
+void AMainPlayer::SetExp(float ExpAmount) 
+{
+	if (GetLocalRole() == ROLE_Authority) 
+	{
+		Exp = ExpAmount;
+		OnExpUpdate();
+	}
+}
+
+void AMainPlayer::SetMaxExp(float MaxExpValue)
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		MaxExp = MaxExpValue;
+		OnMaxExpUpdate();
+	}
+}
+
+
+void AMainPlayer::SetLevel(int32 NextLevel) 
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		Level = NextLevel;
+		OnLevelUpdate();
+	}
+}
+
+void AMainPlayer::SetPointsEarned(int32 InPointsEarned) 
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		PointsEarned = InPointsEarned;
+		OnPointsEarnedUpdate();
+	}
+}
+
+
+void AMainPlayer::SetWins(int32 InWins)
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		Wins = InWins;
+		OnWinsUpdate();
+	}
+}
+
+// *********End Setters and Getters************
+
+
+
 void AMainPlayer::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLifetimeProps) const 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

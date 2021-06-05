@@ -41,6 +41,13 @@ WHAT THE PLAYER CAN DO:
 - Level up from enough EXP
 
 
+
+KNOWN BUGS:
+- Elevators behave weird on client end. I chose to not resolve this issue
+due to time.
+
+
+
 Mistakes:
 - I realized after making EVERY SINGLE variable that I should've used arrays
 to be more efficient.

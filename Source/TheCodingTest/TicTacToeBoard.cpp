@@ -291,6 +291,7 @@ void ATicTacToeBoard::AwardPlayer(AMainPlayer* Main)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AWARDING POINTS"))
 		Main->PointsEarned += 5;
+		Main->Wins++;
 	}
 }
 

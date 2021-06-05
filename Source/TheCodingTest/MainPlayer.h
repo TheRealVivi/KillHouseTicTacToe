@@ -57,6 +57,9 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_PointsEarned, EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
 	int32 PointsEarned;
 
+	UPROPERTY(ReplicatedUsing = OnRep_Wins, EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
+	int32 Wins;
+
 	UPROPERTY(ReplicatedUsing = OnRep_Exp, EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
 	float Exp;
 
@@ -118,6 +121,7 @@ protected:
 	void OnNameUpdate();
 	void OnPointsEarnedUpdate();
 	void OnPieceColorUpdate();
+	void OnWinsUpdate();
 
 public:	
 	// Called every frame
@@ -193,4 +197,7 @@ public:
 
 	UFUNCTION()
 	void OnRep_PieceColor();
+
+	UFUNCTION()
+	void OnRep_Wins();
 };

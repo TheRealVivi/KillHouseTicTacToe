@@ -71,6 +71,7 @@ AMainPlayer::AMainPlayer()
 	RunningSpeed = 950.f;
 	Level = 1;
 	MaxLevel = 99;
+	Wins = 0;
 	
 	MaxHealthIncrease = 20.f;
 
@@ -319,6 +320,7 @@ void AMainPlayer::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AMainPlayer, MaxExp);
 	DOREPLIFETIME(AMainPlayer, PointsEarned);
 	DOREPLIFETIME(AMainPlayer, PieceColor);
+	DOREPLIFETIME(AMainPlayer, Wins);
 }
 
 void AMainPlayer::OnNameUpdate() 
@@ -425,6 +427,20 @@ void AMainPlayer::OnPieceColorUpdate()
 	}
 }
 
+void AMainPlayer::OnWinsUpdate() 
+{
+	if (IsLocallyControlled())
+	{
+
+	}
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+
+	}
+}
+
+
 void AMainPlayer::OnRep_Name()
 {
 	OnNameUpdate();
@@ -463,4 +479,9 @@ void AMainPlayer::OnRep_PointsEarned()
 void AMainPlayer::OnRep_PieceColor() 
 {
 	OnPieceColorUpdate();
+}
+
+void AMainPlayer::OnRep_Wins() 
+{
+	OnWinsUpdate();
 }

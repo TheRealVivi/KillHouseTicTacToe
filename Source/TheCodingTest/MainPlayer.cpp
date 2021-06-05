@@ -82,6 +82,8 @@ void AMainPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Get the point that the character spawns at (for respawning purposes)
+	StartPoint = FVector(GetActorLocation());
 }
 
 // Called every frame
@@ -274,6 +276,7 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Released, this, &AMainPlayer::LMBUp);
 }
 
+// Allows player to move forward and backward
 void AMainPlayer::MoveForward(float Input) 
 {
 	if (Controller != nullptr && Input != 0.0f) 
@@ -287,6 +290,7 @@ void AMainPlayer::MoveForward(float Input)
 	}
 }
 
+// Allows player to move left and right
 void AMainPlayer::MoveRight(float Input) 
 {
 	if (Controller != nullptr && Input != 0.f) 
@@ -300,6 +304,10 @@ void AMainPlayer::MoveRight(float Input)
 	}
 }
 
+/**
+/*  If the player is a client, then trigger server RPC
+/*  Otherwise, if the player is the server, set bShiftKeyDown to true
+*/
 void AMainPlayer::ShiftKeyDown() 
 {
 	if (IsLocallyControlled()) // Client
@@ -317,6 +325,10 @@ void AMainPlayer::ShiftKeyDownServer_Implementation()
 	bShiftKeyDown = true;
 }
 
+/**
+/*  If the player is a client, then trigger server RPC
+/*  Otherwise, if the player is the server, set bShiftKeyDown to false
+*/
 void AMainPlayer::ShiftKeyUp() 
 {
 	if (IsLocallyControlled()) // Client
@@ -334,6 +346,10 @@ void AMainPlayer::ShiftKeyUpServer_Implementation()
 	bShiftKeyDown = false;
 }
 
+/**
+/*  If the player is a client, then trigger server RPC
+/*  Otherwise, if the player is the server, set bEDown to true and equip weapon if overlapping.
+*/
 void AMainPlayer::EKeyDown()
 {
 	if (IsLocallyControlled()) // Client
@@ -351,6 +367,10 @@ void AMainPlayer::EKeyDownServer_Implementation()
 	bEDown = true;
 }
 
+/**
+/*  If the player is a client, then trigger server RPC
+/*  Otherwise, if the player is the server, set bEDown to false.
+*/
 void AMainPlayer::EKeyUp()
 {
 	if (IsLocallyControlled()) // Client
@@ -368,6 +388,11 @@ void AMainPlayer::EKeyUpServer_Implementation()
 	bEDown = false;
 }
 
+
+/**
+/*  If the player is a client, then trigger server RPC
+/*  Otherwise, if the player is the server, set bLMBDown to true and attack with weapon.
+*/
 void AMainPlayer::LMBDown()
 {
 	if (IsLocallyControlled()) // Client
@@ -385,6 +410,11 @@ void AMainPlayer::LMBDownServer_Implementation()
 	bLMBDown = true;
 }
 
+
+/**
+/*  If the player is a client, then trigger server RPC
+/*  Otherwise, if the player is the server, set bLMBDown to false.
+*/
 void AMainPlayer::LMBUp()
 {
 	if (IsLocallyControlled()) // Client
@@ -402,6 +432,10 @@ void AMainPlayer::LMBUpServer_Implementation()
 	bLMBDown = false;
 }
 
+/**
+/*  If the player is a client, then trigger server RPC
+/*  Otherwise, if the player is the server, set bRMBDown to true and attack with weapon.
+*/
 void AMainPlayer::RMBDown()
 {
 	if (IsLocallyControlled()) // Client
@@ -419,6 +453,10 @@ void AMainPlayer::RMBDownServer_Implementation()
 	bRMBDown = true;
 }
 
+/**
+/*  If the player is a client, then trigger server RPC
+/*  Otherwise, if the player is the server, set bRMBDown to false.
+*/
 void AMainPlayer::RMBUp()
 {
 	if (IsLocallyControlled()) // Client
@@ -436,9 +474,17 @@ void AMainPlayer::RMBUpServer_Implementation()
 	bRMBDown = false;
 }
 
-void AMainPlayer::Die() 
+// If player dies, set health to max, items to zero, respawn at start point.
+void AMainPlayer::Die()
 {
-	Health = MaxHealth;
+	SetHealth(GetMaxHealth());
+	SendToStartPoint();
+}
+
+// Sends player to where they initially started.
+void AMainPlayer::SendToStartPoint()
+{
+	SetActorLocation(StartPoint);
 }
 
 void AMainPlayer::ResetGameStatus()
@@ -499,6 +545,21 @@ void AMainPlayer::LevelUp(float RemainingExpAmount)
 	}
 }
 
+// if remaining health is greater than zero, then set health to remaining health
+// Otherwise the player dies
+void AMainPlayer::DecrementHealth(float DamageApplied)
+{
+	float RemainingHealth = Health - DamageApplied;
+	if (RemainingHealth > 0.f)
+	{
+		SetHealth(RemainingHealth);
+	}
+	else
+	{
+		Die();
+	}
+}
+
 // Setters and Getters
 
 // Server RPC to set StaminaStatus
@@ -544,6 +605,14 @@ void AMainPlayer::SetMovementStatus(EMovementStatus Status)
 	}
 }
 
+void AMainPlayer::SetHealth(float HealthValue)
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		Health = FMath::Clamp(HealthValue, 0.f, MaxHealth);
+		OnHealthUpdate(); // Parallels server and client
+	}
+}
 
 void AMainPlayer::SetStamina(float StaminaValue)
 {

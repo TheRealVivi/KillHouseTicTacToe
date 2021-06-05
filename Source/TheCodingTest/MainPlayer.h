@@ -203,16 +203,28 @@ public:
 	void RMBUpServer();
 
 	void Die();
-	void RespawnPlayer();
+	void SendToStartPoint();  // Sends player to spawning location
 
+	// Reduces player health
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void DecrementHealth(float DamageApplied);
+
+	// Increases player exp
 	UFUNCTION(BlueprintCallable, Category = "Player Stats")
 	void IncreaseExp(float ExpAmount);
 
+	// Levels player up and adds remaining exp.
 	UFUNCTION(BlueprintCallable, Category = "Player Stats")
 	void LevelUp(float RemainingExpAmount);
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowingCamera() const { return FollowingCamera; }
+
+	UFUNCTION(BlueprintPure, Category = "Health")
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+
+	UFUNCTION(BlueprintPure, Category = "Health")
+	FORCEINLINE float GetHealth() const { return Health; }
 
 	UFUNCTION(BlueprintPure, Category = "Player Stats")
 	FORCEINLINE float GetMaxStamina() const { return MaxStamina; }
@@ -237,6 +249,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Player Stats")
 	FORCEINLINE int32 GetWins() const { return Wins; }
+
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void SetHealth(float HealthValue);
 
 	UFUNCTION(BlueprintCallable, Category = "Player Stats")
 	void SetStamina(float StaminaValue);

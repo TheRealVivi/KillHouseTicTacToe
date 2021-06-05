@@ -89,6 +89,164 @@ void AMainPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	float DeltaStamina = StaminaDrainRate * GetWorld()->DeltaTimeSeconds;
+
+	/*****************************************************************
+	/*  SPRINTING MECHANIC
+	/*   - Switch case dependent on Stamina status.
+	/*   - If bShiftKeyDown is true, stamina will reduce.
+	/*   - If stamina falls below certain thresholds, StaminaStatus
+	/*     switches to respective states.
+	/*   - When bShiftKeyDown is true, and stamina is not zero,
+	/*     MovementStatus switches to sprinting.
+	/*   -
+	******************************************************************/
+	switch (StaminaStatus)
+	{
+	case EStaminaStatus::ESS_Normal:
+		if (bShiftKeyDown) // Sprinting
+		{
+			if (GetStamina() - DeltaStamina <= MinSprintStamina)
+			{
+				// Stamina has fell below minimum value, change state (turns stamina bar yellow)
+				if (IsLocallyControlled())  // Client controlled
+					SetStaminaStatusServer(EStaminaStatus::ESS_BelowMinimum);
+
+				if (GetLocalRole() == ROLE_Authority) // Server controlled
+					SetStaminaStatus(EStaminaStatus::ESS_BelowMinimum);
+
+				SetStamina(GetStamina() - DeltaStamina);
+			}
+			else
+			{
+				SetStamina(GetStamina() - DeltaStamina);
+			}
+			if (IsLocallyControlled())
+				SetMovementStatusServer(EMovementStatus::EMS_Sprinting);
+
+			if (GetLocalRole() == ROLE_Authority)
+				SetMovementStatus(EMovementStatus::EMS_Sprinting);
+		}
+		else // Shift key up
+		{
+			if (GetStamina() + DeltaStamina >= MaxStamina)
+			{
+				SetStamina(MaxStamina);
+			}
+			else
+			{
+				SetStamina(GetStamina() + DeltaStamina);
+			}
+
+			if (IsLocallyControlled())
+				SetMovementStatusServer(EMovementStatus::EMS_Normal);
+
+			if (GetLocalRole() == ROLE_Authority)
+				SetMovementStatus(EMovementStatus::EMS_Normal);
+		}
+		break;
+	case EStaminaStatus::ESS_BelowMinimum:
+		if (bShiftKeyDown)  // Sprinting
+		{
+			if (GetStamina() - DeltaStamina <= 0.f)
+			{
+				// If stamina runs out, stop running and turn state to exhausted state.
+				if (IsLocallyControlled())
+					SetStaminaStatusServer(EStaminaStatus::ESS_Exhausted);
+
+				if (GetLocalRole() == ROLE_Authority)
+					SetStaminaStatus(EStaminaStatus::ESS_Exhausted);
+
+				SetStamina(0.f);
+				if (IsLocallyControlled())
+					SetMovementStatusServer(EMovementStatus::EMS_Normal);
+
+				if (GetLocalRole() == ROLE_Authority)
+					SetMovementStatus(EMovementStatus::EMS_Normal);
+			}
+			else
+			{
+				SetStamina(GetStamina() - DeltaStamina);
+
+				if (IsLocallyControlled())
+					SetMovementStatusServer(EMovementStatus::EMS_Sprinting);
+
+				if (GetLocalRole() == ROLE_Authority)
+					SetMovementStatus(EMovementStatus::EMS_Sprinting);
+			}
+		}
+		else // shift key up
+		{
+			if (GetStamina() + DeltaStamina >= MinSprintStamina)
+			{
+
+				if (IsLocallyControlled())
+					SetStaminaStatusServer(EStaminaStatus::ESS_Normal);
+
+				if (GetLocalRole() == ROLE_Authority)
+					SetStaminaStatus(EStaminaStatus::ESS_Normal);
+
+				SetStamina(GetStamina() + DeltaStamina);
+			}
+			else
+			{
+				SetStamina(GetStamina() + DeltaStamina);
+			}
+
+			if (IsLocallyControlled())
+				SetMovementStatusServer(EMovementStatus::EMS_Normal);
+
+			if (GetLocalRole() == ROLE_Authority)
+				SetMovementStatus(EMovementStatus::EMS_Normal);
+		}
+
+		break;
+	case EStaminaStatus::ESS_Exhausted:
+		if (bShiftKeyDown) // trying to sprint, but no stamina
+		{
+			SetStamina(0.f);
+		}
+		else // shift key up
+		{
+			// Start regenerating stamina, cannot sprint til stamina above minimum value.
+			if (IsLocallyControlled())
+				SetStaminaStatusServer(EStaminaStatus::ESS_ExhaustedRecovering);
+
+			if (GetLocalRole() == ROLE_Authority)
+				SetStaminaStatus(EStaminaStatus::ESS_ExhaustedRecovering);
+			SetStamina(GetStamina() + DeltaStamina);
+		}
+
+		if (IsLocallyControlled())
+			SetMovementStatusServer(EMovementStatus::EMS_Normal);
+		if (GetLocalRole() == ROLE_Authority)
+			SetMovementStatus(EMovementStatus::EMS_Normal);
+		break;
+	case EStaminaStatus::ESS_ExhaustedRecovering:
+		if (GetStamina() + DeltaStamina >= MinSprintStamina) // Regenerating stamina, cannot sprint til stamina above minimum value.
+		{
+			if (IsLocallyControlled())
+				SetStaminaStatusServer(EStaminaStatus::ESS_Normal);
+			if (GetLocalRole() == ROLE_Authority)
+				SetStaminaStatus(EStaminaStatus::ESS_Normal);
+		}
+		else
+		{
+			SetStamina(GetStamina() + DeltaStamina);
+		}
+
+		if (IsLocallyControlled())
+			SetMovementStatusServer(EMovementStatus::EMS_Normal);
+
+		if (GetLocalRole() == ROLE_Authority)
+			SetMovementStatus(EMovementStatus::EMS_Normal);
+		break;
+	default:
+		;
+	}
+
+
+
 }
 
 // Called to bind functionality to input
@@ -342,6 +500,60 @@ void AMainPlayer::LevelUp(float RemainingExpAmount)
 }
 
 // Setters and Getters
+
+// Server RPC to set StaminaStatus
+void AMainPlayer::SetStaminaStatusServer_Implementation(EStaminaStatus Status)
+{
+	StaminaStatus = Status;
+}
+
+void AMainPlayer::SetStaminaStatus(EStaminaStatus Status)
+{
+	StaminaStatus = Status;
+}
+
+// Server RPC for client to set MovementStatus
+void AMainPlayer::SetMovementStatusServer_Implementation(EMovementStatus Status)
+{
+	// if in Sprinting state, increase max walk speed, else, maintain running speed as is.
+	MovementStatus = Status;
+	if (MovementStatus == EMovementStatus::EMS_Sprinting)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+	}
+}
+
+// if in Sprinting state, increase max walk speed, else, maintain running speed as is.
+void AMainPlayer::SetMovementStatus(EMovementStatus Status)
+{
+	// if in Sprinting state, increase max walk speed, else, maintain running speed as is.
+	MovementStatus = Status;
+	if (MovementStatus == EMovementStatus::EMS_Sprinting)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+	}
+}
+
+
+void AMainPlayer::SetStamina(float StaminaValue)
+{
+	if (GetLocalRole() == ROLE_Authority || IsLocallyControlled())
+	{
+		Stamina = FMath::Clamp(StaminaValue, 0.f, MaxStamina);
+		OnStaminaUpdate(); // Parallels server and client
+	}
+}
+
 
 void AMainPlayer::SetExp(float ExpAmount) 
 {

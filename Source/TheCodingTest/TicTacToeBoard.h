@@ -174,6 +174,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void ResetGame();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Reset Game")
+	void DestroyBoardPieces();
+
 	UFUNCTION()
 	void SpawnPiece(UBoxComponent* ActiveSlotCollider, const FVector& Location, uint32 ActivePlayerID);
 

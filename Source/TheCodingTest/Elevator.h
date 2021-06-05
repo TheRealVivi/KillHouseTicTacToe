@@ -51,5 +51,4 @@ public:
 	void ToggleInterping();
 
 	void SwapVectors(FVector& Vector1, FVector& Vector2);
-
 };

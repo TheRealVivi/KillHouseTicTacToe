@@ -296,6 +296,7 @@ void ATicTacToeBoard::AwardPlayer(AMainPlayer* Main)
 
 void ATicTacToeBoard::ResetGame_Implementation()
 {
+	DestroyBoardPieces();
 		bSlot1Active = false;
 		bSlot2Active = false;
 		bSlot3Active = false;

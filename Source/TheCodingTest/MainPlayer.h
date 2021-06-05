@@ -57,6 +57,9 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_PointsEarned, EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
 	int32 PointsEarned;
 
+	UPROPERTY(ReplicatedUsing = OnRep_Wins, EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
+	int32 Wins;
+
 	UPROPERTY(ReplicatedUsing = OnRep_Exp, EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
 	float Exp;
 
@@ -118,6 +121,7 @@ protected:
 	void OnNameUpdate();
 	void OnPointsEarnedUpdate();
 	void OnPieceColorUpdate();
+	void OnWinsUpdate();
 
 public:	
 	// Called every frame
@@ -163,9 +167,47 @@ public:
 	void Die();
 	void RespawnPlayer();
 
+	UFUNCTION(BlueprintCallable, Category = "Player Stats")
+	void IncreaseExp(float ExpAmount);
+
+	UFUNCTION(BlueprintCallable, Category = "Player Stats")
+	void LevelUp(float RemainingExpAmount);
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowingCamera() const { return FollowingCamera; }
+
+	UFUNCTION(BlueprintPure, Category = "Player Stats")
+	FORCEINLINE float GetExp() const { return Exp; }
+
+	UFUNCTION(BlueprintPure, Category = "Player Stats")
+	FORCEINLINE float GetMaxExp() const { return MaxExp; }
+
+	UFUNCTION(BlueprintPure, Category = "Player Stats")
+	FORCEINLINE int32 GetLevel() const { return Level; }
+
+	UFUNCTION(BlueprintPure, Category = "Player Stats")
+	FORCEINLINE int32 GetMaxLevel() const { return MaxLevel; }
+
+	UFUNCTION(BlueprintPure, Category = "Player Stats")
+	FORCEINLINE int32 GetPointsEarned() const { return PointsEarned; }
+
+	UFUNCTION(BlueprintPure, Category = "Player Stats")
+	FORCEINLINE int32 GetWins() const { return Wins; }
+
+	UFUNCTION(BlueprintCallable, Category = "Player Stats")
+	void SetExp(float ExpAmount);
+
+	UFUNCTION(BlueprintCallable, Category = "Player Stats")
+	void SetMaxExp(float MaxExpValue);
+
+	UFUNCTION(BlueprintCallable, Category = "Player Stats")
+	void SetLevel(int32 NextLevel);
+
+	UFUNCTION(BlueprintCallable, Category = "Player Stats")
+	void SetPointsEarned(int32 InPointsEarned);
+
+	UFUNCTION(BlueprintCallable, Category = "Player Stats")
+	void SetWins(int32 InWins);
 
 	UFUNCTION()
 	void ResetGameStatus();
@@ -193,4 +235,7 @@ public:
 
 	UFUNCTION()
 	void OnRep_PieceColor();
+
+	UFUNCTION()
+	void OnRep_Wins();
 };

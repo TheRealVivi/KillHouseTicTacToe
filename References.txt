@@ -1,0 +1,13 @@
+3D Player models and animations from mixamo.com
+
+Main Menu / Host Menu / Join Session Menu:
+(First set of videos designing the UI)
+https://www.youtube.com/c/UnrealEngine/search?query=Blueprint%20Multiplayer
+
+
+Learning Unreal Engine:
+"Unreal Engine C++ The Ultimate Game Developer Course"
+https://www.udemy.com/course/unreal-engine-the-ultimate-game-developer-course/learn/lecture/14235070#overview
+
+Learning Unreal Engine Networking:
+https://docs.unrealengine.com/en-US/InteractiveExperiences/Networking/index.html

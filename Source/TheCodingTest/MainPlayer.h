@@ -6,6 +6,26 @@
 #include "GameFramework/Character.h"
 #include "MainPlayer.generated.h"
 
+UENUM(BlueprintType)
+enum class EMovementStatus : uint8 
+{
+	EMS_Normal UMETA(DisplayName = "Normal"),
+	EMS_Sprinting UMETA(DisplayName = "Sprinting"),
+
+	EMS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+UENUM(BlueprintType)
+enum class EStaminaStatus :uint8 
+{
+	ESS_Normal UMETA(DisplayName = "Normal"),
+	ESS_BelowMinimum UMETA(DisplayName = "BelowMinimum"),
+	ESS_Exhausted UMETA(DisplayName = "Exhausted"),
+	ESS_ExhaustedRecovering UMETA(DisplayName = "ExhaustedRecovering"),
+
+	ESS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class THECODINGTEST_API AMainPlayer : public ACharacter
 {
@@ -17,11 +37,29 @@ public:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintCallable, Category = "Enums")
+	void SetMovementStatus(EMovementStatus Status);
+
+	UFUNCTION(Server, Reliable)
+	void SetMovementStatusServer(EMovementStatus Status);
+
+	UFUNCTION(BlueprintCallable, Category = "Enums")
+	void SetStaminaStatus(EStaminaStatus Status);
+
+	UFUNCTION(Server, Reliable)
+	void SetStaminaStatusServer(EStaminaStatus Status);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowingCamera;
+
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
+	EMovementStatus MovementStatus; // CURRENT MOVEMENT STATE
+
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
+	EStaminaStatus StaminaStatus; // CURRENT SPRINTING STATE
 
 	// Stats
 	UPROPERTY(ReplicatedUsing = OnRep_Name, EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
@@ -177,6 +215,12 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowingCamera() const { return FollowingCamera; }
 
 	UFUNCTION(BlueprintPure, Category = "Player Stats")
+	FORCEINLINE float GetMaxStamina() const { return MaxStamina; }
+
+	UFUNCTION(BlueprintPure, Category = "Player Stats")
+	FORCEINLINE float GetStamina() const { return Stamina; }
+
+	UFUNCTION(BlueprintPure, Category = "Player Stats")
 	FORCEINLINE float GetExp() const { return Exp; }
 
 	UFUNCTION(BlueprintPure, Category = "Player Stats")
@@ -193,6 +237,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Player Stats")
 	FORCEINLINE int32 GetWins() const { return Wins; }
+
+	UFUNCTION(BlueprintCallable, Category = "Player Stats")
+	void SetStamina(float StaminaValue);
 
 	UFUNCTION(BlueprintCallable, Category = "Player Stats")
 	void SetExp(float ExpAmount);

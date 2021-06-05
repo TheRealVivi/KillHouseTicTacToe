@@ -157,9 +157,14 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	/**
+	*   Checks the paramer Main Players bools, looking for a completed row, column or diagonal
+	*   If any row, column or diagonal is found to be complete, award the player and reset the game
+	*/
 	void CheckBoard(class AMainPlayer* Main);
+
+	// Increase winning player's points, wins and exp.
 	void AwardPlayer(class AMainPlayer* Main);
-	//void OnbSlot7ActiveUpdate();
 
 public:	
 	// Called every frame
@@ -171,23 +176,33 @@ public:
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	// Multicast RPC that destroys all board pieces and resets game values
 	UFUNCTION(NetMulticast, Reliable)
 	void ResetGame();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Reset Game")
 	void DestroyBoardPieces();
 
+	/**
+	*   Spawns board piece at the active slot collider
+	*/
 	UFUNCTION()
 	void SpawnPiece(UBoxComponent* ActiveSlotCollider, const FVector& Location, uint32 ActivePlayerID);
 
 	UFUNCTION()
 	FVector GetSpawnPoint(UBoxComponent* ActiveSlotCollider);
 
+	// Activates the slot at the active slot collider
 	void ActivateSlot(UBoxComponent* ActiveSlotCollider, AMainPlayer* Main, uint32 SlotNumber);
 
+
+	/**
+	*   Multicast RPC designed to color HUD tic tac toe board based on slot number and PlayerID
+	*/
 	UFUNCTION(NetMulticast, Reliable)
 	void SlotActivated(class AMainPlayer* Main, uint32 SlotNumber);
 
+	// Not currently used
 	UFUNCTION(NetMulticast, Reliable)
 	void SetPlayerID(uint32 MainUniqueID);
 

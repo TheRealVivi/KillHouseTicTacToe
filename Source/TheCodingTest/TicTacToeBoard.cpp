@@ -17,9 +17,11 @@ ATicTacToeBoard::ATicTacToeBoard()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Setting root component to a SceneComponent
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
 	RootComponent = RootSceneComponent;
 
+	// Attaching Mesh to root
 	VertBoardPieceMesh1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VertBoardPiece1"));
 	VertBoardPieceMesh1->SetupAttachment(GetRootComponent());
 
@@ -32,6 +34,7 @@ ATicTacToeBoard::ATicTacToeBoard()
 	HorizBoardPieceMesh2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HorizBoardPiece2"));
 	HorizBoardPieceMesh2->SetupAttachment(GetRootComponent());
 
+	// setting up slot colliders
 	SlotCollider1 = CreateDefaultSubobject<UBoxComponent>(TEXT("SlotCollider1"));
 	SlotCollider1->SetupAttachment(GetRootComponent());
 
@@ -59,7 +62,7 @@ ATicTacToeBoard::ATicTacToeBoard()
 	SlotCollider9 = CreateDefaultSubobject<UBoxComponent>(TEXT("SlotCollider9"));
 	SlotCollider9->SetupAttachment(GetRootComponent());
 
-	Player1ID = 0;
+	Player1ID = 0;  // Default value for player ID's
 	Player2ID = 0;
 
 	bPlayer1IDAssigned = false;
@@ -132,6 +135,13 @@ void ATicTacToeBoard::Tick(float DeltaTime)
 
 }
 
+/**
+*   Each slot collider is connected to this overlap event
+*   When player overlaps with slot collider, check to see if all player IDs have been assigned
+*   If all player ID's have not been assigned, then assign remaining PlayerID to the overlapping players unique ID
+*   
+*   Activate the overlapping slot colliders board piece
+*/
 void ATicTacToeBoard::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) 
 {
 	if (GetLocalRole() == ROLE_Authority) 
@@ -208,7 +218,6 @@ void ATicTacToeBoard::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
 
 			if (OverlappedComponent->GetUniqueID() == SlotCollider7->GetUniqueID() && !bSlot7Active)
 			{
-				// Can probably shove this repeated code into one function with signature (UBoxComponent, AMainPlayer, bool, bool)
 				UE_LOG(LogTemp, Warning, TEXT("SLOT7 COLLIDED WITH"))
 				ActivateSlot(SlotCollider7, Main, 7);
 			}
@@ -238,6 +247,10 @@ void ATicTacToeBoard::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AAc
 	}
 }
 
+/**
+*   Checks the paramer Main Players bools, looking for a completed row, column or diagonal
+*   If any row, column or diagonal is found to be complete, award the player and reset the game
+*/
 void ATicTacToeBoard::CheckBoard(AMainPlayer* Main) 
 {
 	if (Main) 
@@ -275,16 +288,17 @@ void ATicTacToeBoard::CheckBoard(AMainPlayer* Main)
 			Main->bDiagonal2Finished = true;
 		}
 
+		// If any row, column or diagonal is found to be complete, award the player and reset the game
 		if (Main->bRow1Finished || Main->bRow2Finished || Main->bRow3Finished || Main->bColumn1Finished || Main->bColumn2Finished || Main->bColumn3Finished
 			|| Main->bDiagonal1Finished || Main->bDiagonal2Finished) 
 		{
 			AwardPlayer(Main);
 			ResetGame();
-
 		}
 	}
 }
 
+// Increase winning player's points, wins and exp.
 void ATicTacToeBoard::AwardPlayer(AMainPlayer* Main) 
 {
 	if (Main) 
@@ -296,6 +310,7 @@ void ATicTacToeBoard::AwardPlayer(AMainPlayer* Main)
 	}
 }
 
+// Multicast RPC that destroys all board pieces and resets game values
 void ATicTacToeBoard::ResetGame_Implementation()
 {
 	DestroyBoardPieces();
@@ -326,7 +341,9 @@ void ATicTacToeBoard::ResetGame_Implementation()
 		bPlayer2IDAssigned = false;
 }
 
-
+/**
+*   Spawns board piece at the active slot collider
+*/
 void ATicTacToeBoard::SpawnPiece(UBoxComponent* ActiveSlotCollider, const FVector& Location, uint32 ActivePlayerID)
 {
 	if (GetLocalRole() == ROLE_Authority) 
@@ -360,6 +377,7 @@ FVector ATicTacToeBoard::GetSpawnPoint(UBoxComponent* ActiveSlotCollider)
 	return Point;
 }
 
+// Activates the slot at the active slot collider
 void ATicTacToeBoard::ActivateSlot(UBoxComponent* ActiveSlotCollider, AMainPlayer* Main, uint32 SlotNumber) 
 {
 	UE_LOG(LogTemp, Warning, TEXT("SLOT7 COLLIDED WITH"))
@@ -367,6 +385,9 @@ void ATicTacToeBoard::ActivateSlot(UBoxComponent* ActiveSlotCollider, AMainPlaye
 	SlotActivated(Main, SlotNumber);
 }
 
+/**
+*   Multicast RPC designed to color HUD tic tac toe board based on slot number and PlayerID
+*/
 void ATicTacToeBoard::SlotActivated_Implementation(AMainPlayer* Main, uint32 SlotNumber)
 {
 	if (Main->GetUniqueID() == Player1ID) 
@@ -434,6 +455,7 @@ void ATicTacToeBoard::SlotActivated_Implementation(AMainPlayer* Main, uint32 Slo
 	}
 }
 
+// Not currently used
 void ATicTacToeBoard::SetPlayerID_Implementation(uint32 MainPlayerID) 
 {
 	if (MainPlayerID != Player1ID && !bPlayer1IDAssigned)

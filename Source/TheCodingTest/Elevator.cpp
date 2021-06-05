@@ -27,6 +27,7 @@ void AElevator::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
 	StartPoint = GetActorLocation();
 	EndPoint += StartPoint;
 	MidPoint += StartPoint;
